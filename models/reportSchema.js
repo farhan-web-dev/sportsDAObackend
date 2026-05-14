@@ -9,6 +9,7 @@ const ReportSchema = new mongoose.Schema({
   status: { type: String, default: "pending" }, // pending → proposed → approved
   proposalId: String, // set later when DAO creates proposal
   marketplaceMinted: { type: Boolean, default: false },
+  price: { type: Number, required: false },
 });
 
 module.exports = mongoose.model("Report", ReportSchema);

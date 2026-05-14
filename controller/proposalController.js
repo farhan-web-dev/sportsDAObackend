@@ -1,7 +1,10 @@
 const Report = require("../models/reportSchema");
 const Proposal = require("../models/Proposal"); // FIXED IMPORT
 
+const { ethers } = require("ethers");
 const providerFile = require("../services/block-chain-provider");
+const marketplace =
+  providerFile.marketplace || providerFile.default.marketplace;
 const analyticsDao =
   providerFile.analyticsDao || providerFile.default.analyticsDao;
 
@@ -20,15 +23,19 @@ exports.prepareProposal = catchAsync(async (req, res, next) => {
 
   console.log(report);
 
-  const encodedCall = analyticsDao.interface.encodeFunctionData(
-    "recordReport",
-    [report.description]
+  const priceInWei = ethers.parseEther(
+    report.price ? report.price.toString() : "0",
   );
+  const encodedCall = marketplace.interface.encodeFunctionData("mintReport", [
+    report.creator,
+    report.fileIpfsHash,
+    priceInWei,
+  ]);
 
   const proposalRecord = await Proposal.create({
     reportId,
     description: `Approve Report: ${report.title}`,
-    target: process.env.ANALYTICS_DAO_ADDRESS,
+    target: process.env.MARKETPLACE_ADDRESS,
     calldata: encodedCall,
     value: 0,
   });
@@ -60,7 +67,7 @@ exports.updateProposalId = catchAsync(async (req, res, next) => {
   const proposal = await Proposal.findByIdAndUpdate(
     proposalDbId,
     { proposalId },
-    { new: true, runValidators: true }
+    { new: true, runValidators: true },
   );
 
   if (!proposal) {
@@ -104,15 +111,15 @@ exports.updateProposalStatus = catchAsync(async (req, res, next) => {
 
   // Case-insensitive comparison to find the matching valid status
   const matchedStatus = validStatuses.find(
-    (validStatus) => validStatus.toLowerCase() === status.toLowerCase()
+    (validStatus) => validStatus.toLowerCase() === status.toLowerCase(),
   );
 
   if (!matchedStatus) {
     return next(
       new AppError(
         `Invalid status. Must be one of: ${validStatuses.join(", ")}`,
-        400
-      )
+        400,
+      ),
     );
   }
 
@@ -122,7 +129,7 @@ exports.updateProposalStatus = catchAsync(async (req, res, next) => {
   const proposal = await Proposal.findOneAndUpdate(
     query,
     { status: matchedStatus }, // Use the correctly cased status from validStatuses
-    { new: true, runValidators: true }
+    { new: true, runValidators: true },
   );
 
   if (!proposal) {
@@ -158,8 +165,8 @@ exports.vote = catchAsync(async (req, res, next) => {
     return next(
       new AppError(
         "Invalid vote. Must be 0 (Against), 1 (For), or 2 (Abstain)",
-        400
-      )
+        400,
+      ),
     );
   }
 
@@ -184,7 +191,7 @@ exports.vote = catchAsync(async (req, res, next) => {
   const updatedProposal = await Proposal.findOneAndUpdate(
     { proposalId: proposalId },
     updateField,
-    { new: true, runValidators: true }
+    { new: true, runValidators: true },
   );
 
   res.status(200).json({

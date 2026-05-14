@@ -4,7 +4,7 @@ const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
 
 exports.createReport = catchAsync(async (req, res, next) => {
-  const { creator, title, description } = req.body;
+  const { creator, title, description, price } = req.body;
   if (!req.file) {
     return next(new AppError("file required", 400));
   }
@@ -18,6 +18,7 @@ exports.createReport = catchAsync(async (req, res, next) => {
     creator,
     title,
     description,
+    price,
     fileIpfsHash,
     timestamp: Date.now(),
     status: "pending",
