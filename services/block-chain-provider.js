@@ -4,10 +4,10 @@ const path = require("path");
 
 // Load ABIs
 const governorABI = JSON.parse(
-  fs.readFileSync(path.resolve(__dirname, "../abis/governerContract.json"))
+  fs.readFileSync(path.resolve(__dirname, "../abis/GovernerContract.json"))
 );
 const marketplaceABI = JSON.parse(
-  fs.readFileSync(path.resolve(__dirname, "../abis/marketPlace.json"))
+  fs.readFileSync(path.resolve(__dirname, "../abis/Marketplace.json"))
 );
 const analyticsABI = JSON.parse(
   fs.readFileSync(path.resolve(__dirname, "../abis/AnalyticsDAO.json"))

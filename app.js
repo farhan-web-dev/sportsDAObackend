@@ -16,7 +16,13 @@ const app = express();
 
 app.use(
   cors({
-    origin: ["http://localhost:8080", "http://localhost:3000"],
+    origin: [
+      "http://localhost:8080", 
+      "http://localhost:3000", 
+      "http://localhost:5173", 
+      "https://dao-frontend-448254913669.us-central1.run.app", 
+      "https://dao-admin-448254913669.us-central1.run.app"
+    ],
     credentials: true,
   })
 );
