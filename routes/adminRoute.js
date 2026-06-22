@@ -1,6 +1,9 @@
 const express = require("express");
+const adminController = require("../controller/adminController");
 
 const router = express.Router();
+
+router.get("/dashboard-stats", adminController.getDashboardStats);
 
 router.post("/check-admin", (req, res) => {
   const { walletAddress } = req.body;
